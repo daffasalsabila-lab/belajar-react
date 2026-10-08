@@ -50,17 +50,17 @@ const AppModal = ({ show, onClose, onSubmit, submitLabel = "Save", cancelLabel =
             <DialogContent className="sm:max-w-[540x]">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
-                    <DialogDescription>
+                    {/* <DialogDescription>
                         This action cannot be undone. This will permanently delete your account
                         and remove your data from our servers.
-                    </DialogDescription>
+                    </DialogDescription> */}
                 </DialogHeader>
 
                 <form onSubmit={onSubmit}>
                     <div className="py-2">{children}</div>
 
                     <DialogFooter>
-                        <Button type="submit" disable={isLoading}>
+                        <Button type="submit" disabled={isLoading}>
                             {isLoading ? 'Loading...' : submitLabel}
                         </Button>
                         <Button variant="outline" onClick={() => onClose(false)}>

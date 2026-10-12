@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // import { Card, Form, Button, Table, Modal } from "react-bootstrap";
 import AppModal from "../../components/AppModal";
 import { CardHeader, CardTitle } from "react-bootstrap";
+import api from "@/servicess/api.js";
 
 const dataUsers = [
   {
@@ -36,13 +38,24 @@ const ListUser = () => {
     name: "",
     email: "",
     password: "",
-    status: "Active"
+    is_active: 1,
   };
 
   const [showModal, setShowModal] = useState(false);
-  const [users, setUsers] = useState(dataUsers);
+  const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState(_initForm);
   const [isEdit, setIsEdit] = useState(false);
+  const fetchUser = async () => {
+    try {
+      const response = await api.get("/user");
+      setUsers(response.data.data)
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -68,28 +81,46 @@ const ListUser = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // jika edit data
-    if (isEdit) {
-      setUsers(users.map((user) => (user.id === formData.id ? formData : user)));
-    } else {
-      const newUser = {
-        ...formData,
-        id: Date.now(),
+    try {
+      // jika edit data
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        is_active: parseInt(formData.is_active),
       };
-
-      setUsers([...users, newUser]);
+      if (isEdit) {
+        // update data
+        await api.put(`/user/${formData.id}`, payload);
+        // setUsers(users.map((user) => (user.id === formData.id ? formData : user)));
+      } else {
+        // insert data
+        await api.post("/user", payload); 
+        // const newUser = {
+        //   ...formData,
+        //   id: Date.now(),
+        // };
+  
+        // setUsers([...users, newUser]);
+      }
       setFormData(_initForm);
+    } catch (error) {
+      const errMsg = error.message;
+      console.log(errMsg);
+    } finally {
+      fetchUser();
+      setShowModal(false);
     }
-    setShowModal(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const confirmation = window.confirm("Are you sure want to delete this data?");
     if (confirmation) {
-      setUsers(users.filter((u) => u.id !== id));
+      // delete
+      await api.delete(`/user/${id}`);
+      fetchUser();
     }
     // filter: users
   };
@@ -118,7 +149,7 @@ const ListUser = () => {
                 <th className="px-6 py-3 font-medium">Name</th>
                 <th className="px-6 py-3 font-medium">Email</th>
                 <th className="px-6 py-3 font-medium">Status</th>
-                <th className="px-6 py-3 font-medium">Action</th>
+                <th className="text-center px-6 py-3 font-medium">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -128,13 +159,16 @@ const ListUser = () => {
                     <td className="px-4 py-6 whitespace-nowrap">{index + 1}</td>
                     <td>{user.name}</td>
                     <td>{user.email}</td>
-                    {/* <td>{user.status}</td> */}
-                    <td>Active</td>
-                    <td className="px-4 py-6 text-right whitespace-nowrap">
-                      <Button onClick={() => handleEditModal(user)} variant="warning" size="sm" className="me-2">
+                    <td>
+                      <span className=
+                      {`border rounded-md p-2 px-6 ${user.is_active === 1 ? "bg-green-600" : "bg-red-600"} text-white`}>
+                        {user.is_active === 1 ? "Active" : "In-Active"}
+                        </span></td>
+                    <td className="px-4 py-6 text-center whitespace-nowrap">
+                      <Button onClick={() => handleEditModal(user)} size="sm" className="me-2 rounded-md bg-green-600">
                         Edit
                       </Button>
-                      <Button onClick={() => handleDelete(user.id)} variant="danger" size="sm" className="me-2">
+                      <Button onClick={() => handleDelete(user.id)} variant="destructive" size="sm" className="me-2 rounded-md">
                         Delete
                       </Button>
                     </td>
@@ -184,21 +218,21 @@ const ListUser = () => {
 
       <AppModal show={showModal} onClose={handleCloseModal} title={isEdit ? "Edit User" : "Create New User"} onSubmit={handleSubmit} submitLabel={isEdit ? "Save Change" : "Save"}>
 
-{/* cara 1 */}
+        {/* cara 1 */}
 
-<div className="space-y-4">
-  <div className="space-y-2">
-    <Label>Name</Label>
-    <Input id="name" 
-    name="name"
-    value={formData.name} onChange={handleChange} required
-    placeholder="Enter your name" />
-  </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Name</Label>
+            <Input id="name"
+              name="name"
+              value={formData.name} onChange={handleChange} required
+              placeholder="Enter your name" />
+          </div>
 
           <div className="space-y-2">
             <Label>Email</Label>
             <Input type="email"
-            id="email"
+              id="email"
               name="email"
               value={formData.email} onChange={handleChange} required
               placeholder="Enter your email" />
@@ -208,18 +242,46 @@ const ListUser = () => {
             <Label>Password</Label>
             <Input type="password"
               name="password"
-              value={formData.password} onChange={handleChange} required
+              value={formData.password} onChange={handleChange} required = { isEdit ? false: true }
               placeholder="Enter your password" />
           </div>
-{/* <div className="space-y-2">
+
+          {isEdit ? (
+            <div className="space-y-2">
+              <Label>Activation</Label>
+              <div>
+                <RadioGroup
+                  value={String(formData.is_active)}
+                  onValueChange={(val) =>
+                    setFormData({ ...formData, is_active: parseInt(val) })
+                  }
+                  className="w-fit flex gap-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="1" id="active" />
+                    <Label htmlFor="active">Active</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="0" id="inactive" />
+                    <Label htmlFor="inactive">In-Active</Label>
+                  </div>
+                </RadioGroup>
+
+              </div>
+            </div>
+          ) : (
+            ""
+          )} 
+
+          {/* <div className="space-y-2">
   <Button></Button>
 </div> */}
 
-</div>
+        </div>
 
-{/* cara 2 */}
+        {/* cara 2 */}
 
-          {/* <div className="mb-3">
+        {/* <div className="mb-3">
             <Label>Name</Label>
             <Input type="text" name="name" placeholder="Enter your name" required value={formData.name} onChange={handleChange}></Input>
           </div>
@@ -232,14 +294,14 @@ const ListUser = () => {
             <Input value={formData.password} onChange={handleChange} type="password" name="password" placeholder="Enter your passwod" required></Input>
           </div> */}
 
-          <div className="mb-3">
-            <label>Status</label>
-            <select name="status" value={formData.status} onChange={handleChange}>
-              <option value="">Select One</option>
-              <option value="Active">Publish</option>
-              <option value="In Active">Draft</option>
-            </select>
-          </div>
+        <div className="mb-3">
+          <label>Status</label>
+          <select name="status" value={formData.status} onChange={handleChange}>
+            <option value="">Select One</option>
+            <option value="Active">Publish</option>
+            <option value="In Active">Draft</option>
+          </select>
+        </div>
 
       </AppModal>
     </>

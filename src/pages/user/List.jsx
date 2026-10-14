@@ -47,8 +47,9 @@ const ListUser = () => {
   const [isEdit, setIsEdit] = useState(false);
   const fetchUser = async () => {
     try {
+      // get All users
       const response = await api.get("/user");
-      setUsers(response.data.data)
+      setUsers(response.data);
     } catch (error) {
       console.log(error.message);
     }

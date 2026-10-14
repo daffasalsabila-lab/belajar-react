@@ -8,7 +8,7 @@ const items = [
   { title: "Inbox", url: "#", icon: Inbox },
   { title: "Calendar", url: "#", icon: Calendar },
   { title: "Search", url: "#", icon: Search },
-  { title: "Settings", url: "#", icon: Settings },
+  { title: "Logout", url: "#", icon: Settings },
 ];
 
 export function AppSidebar() {

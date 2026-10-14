@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import api from "@/servicess/api.js"
 import cat from "@/assets/cat-grumpy.jpg";
 
 export default function Login() {
@@ -33,23 +34,11 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      console.log(res);
-      const result = await res.json();
-      if(!res.ok) {
-        throw new Error(result.message || "Please check your email and password");
-      }
-      localStorage.setItem("", result.data.token);
-      setTimeout(() => {
+      const res = await api.post("/auth/login", formData);
+      console.log(res.data.token);
+
+      localStorage.setItem("token", res.data.token);
         navigate("/dashboard");
-      }, 1000);
     } catch (error) {
       console.log(error.message);
       setErrorMsg(error.message);

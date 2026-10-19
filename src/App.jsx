@@ -11,7 +11,10 @@ import Login from "./pages/Login";
 import MainLayout from "./pages/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import ListUser from "./pages/user/List";
-import ListTransaction from "./pages/transaction/List";
+import CategoryPage from "./pages/category/List";
+// import CategoryPage from "./pages/categoryPage/CategoryPage";
+import ProductPage from "./pages/product/List";
+import ListTransaction from "./pages/transaction/List"; 
 
 function App() {
   return (
@@ -23,6 +26,9 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />}></Route>
           <Route path="/user" element={<ListUser />}></Route>
+          <Route path="/categoryPage" element={<CategoryPage />}></Route>
+          <Route path="/product" element={<ProductPage />}></Route>
+          <Route path="/category" element={<CategoryPage />}></Route>
           <Route path="/transaction" element={<ListTransaction />}></Route>
         </Route>
       </Routes>

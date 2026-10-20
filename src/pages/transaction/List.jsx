@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
@@ -10,29 +11,9 @@ import AppModal from "../../components/AppModal";
 import { CardHeader, CardTitle } from "react-bootstrap";
 import api from "@/servicess/api.js";
 
-const datatransactions = [
-  {
-    id: 1,
-    name: "Reza",
-    email: "ribrahim50@gmail.com",
-    password: 12345678,
-  },
-  {
-    id: 2,
-    name: "Budi",
-    email: "budi@gmail.com",
-    password: 12345678,
-    // status: "Active"
-  },
-  {
-    id: 3,
-    name: "ani",
-    email: "ani@gmail.com",
-    password: 12345678,
-  },
-];
 
 const ListTransaction = () => {
+  const navigate = useNavigate();
   const _initForm = {
     id: null,
     name: "",
@@ -131,9 +112,9 @@ const ListTransaction = () => {
       <Card className="shadow-sm border-border p-6">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pd-4">
           <div>
-            <CardTitle className="text-xl font-bold">Data User Transaction</CardTitle>
+            <CardTitle className="text-xl font-bold">Data Transaction</CardTitle>
           </div>
-          <Button onClick={handleOpenModal}>
+          <Button onClick={() => navigate("/transaction/create")}>
             Create New Transaction
           </Button>
         </CardHeader>
@@ -172,7 +153,7 @@ const ListTransaction = () => {
                       {`border rounded-md p-2 px-6 ${user.is_active === 1 ? "bg-green-600" : "bg-red-600"} text-white`}>
                         {user.is_active === 1 ? "Active" : "In-Active"}
                         </span></td> */}
-                    <td className="px-4 py-6 text-center whitespace-nowrap">
+                    <td className="px-4 py-6 whitespace-nowrap">
                       <Button onClick={() => handleEditModal(user)} size="sm" className="me-2 rounded-md bg-green-600">
                         Edit
                       </Button>

@@ -16,6 +16,7 @@ import CategoryPage from "./pages/category/List";
 import ProductPage from "./pages/product/List";
 import ListTransaction from "./pages/transaction/List"; 
 import FormTransaction from "./pages/transaction/Form";
+import PrintTransaction from "./pages/transaction/Print";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/category" element={<CategoryPage />}></Route>
           <Route path="/transaction" element={<ListTransaction />}></Route>
           <Route path="/transaction/create" element={<FormTransaction />}></Route>
+          <Route path="/transaction/print" element={<PrintTransaction />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>
